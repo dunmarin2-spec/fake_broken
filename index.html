@@ -2,65 +2,91 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>액정 박살 주의</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>📱 액정 파손 주의 📱</title>
     <style>
+        /* 기본 스타일: 전체 화면을 차지하고 배경은 하얗게 설정 (또는 원하는 배경) */
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #000; /* 배경을 검정으로 하면 더 리얼합니다 */
-            cursor: crosshair;
+            background-color: #f0f0f0; /* 배경색은 흰색 계열로 해야 금이 잘 보입니다 */
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer; /* 클릭 가능하다는 표시 */
         }
 
-        /* 깨진 유리 레이어 */
+        /* 1. 깨진 유리 레이어 (처음엔 숨김) */
         #crack-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-image: url('https://i.imgur.com/8Yv9p8H.png'); /* 깨진 유리 투명 PNG */
+            /* 고해상도 깨진 유리 PNG 이미지 */
+            background-image: url('https://i.imgur.com/7123A8C.png'); 
             background-size: cover;
             background-position: center;
-            display: none; /* 처음엔 숨김 */
-            z-index: 9999;
-            pointer-events: none; /* 클릭 이벤트가 통과되게 함 */
+            background-repeat: no-repeat;
+            display: none; /* 클릭 전까지 숨김 */
+            z-index: 9999; /* 가장 위에 표시 */
+            pointer-events: none; /* 클릭이 금 레이어를 통과해 배경에 닿게 함 */
         }
 
-        .instruction {
-            color: white;
+        /* 2. 유리를 깨달라는 안내 문구 */
+        #instruction {
             text-align: center;
-            font-family: sans-serif;
-            margin-top: 45vh;
+            color: #333;
+            transition: opacity 0.5s;
+        }
+
+        /* 3. 유리가 깨졌을 때 화면이 살짝 어두워지는 효과 (선택) */
+        .broken-bg {
+            animation: darkenscreen 0.2s forwards;
+        }
+
+        @keyframes darkenscreen {
+            from { background-color: #f0f0f0; }
+            to { background-color: #ccc; } /* 약간 어두워짐 */
         }
     </style>
 </head>
 <body>
 
-    <div id="instruction" class="instruction">
-        <h1>화면을 터치하여 테스트를 시작하세요</h1>
+    <div id="instruction">
+        <h1>강도 테스트</h1>
+        <p>화면의 "중앙"을 강하게 터치해서</p>
+        <p>내구성을 테스트하세요.</p>
     </div>
 
     <div id="crack-overlay"></div>
 
     <script>
+        // 화면 전체에 클릭 이벤트리스너 추가
         document.body.addEventListener('click', function() {
-            // 1. 안내 문구 숨기기
-            document.getElementById('instruction').style.display = 'none';
+            // 1. 안내 문구 즉시 숨기기
+            const instruction = document.getElementById('instruction');
+            instruction.style.opacity = '0'; // 서서히 사라짐
+            setTimeout(() => instruction.style.display = 'none', 500); // 0.5초 뒤 완전히 제거
             
             // 2. 깨진 이미지 보여주기
             const crack = document.getElementById('crack-overlay');
             crack.style.display = 'block';
 
-            // 3. 진동 효과 (모바일 기기만 해당)
+            // 3. 배경색 변경 애니메이션 적용
+            document.body.classList.add('broken-bg');
+
+            // 4. 진동 효과 (모바일 기기 전용, 0.2초 간)
             if (navigator.vibrate) {
-                navigator.vibrate([100, 50, 200]);
+                navigator.vibrate(200);
             }
 
-            // 4. (선택사항) 효과음 추가하고 싶다면 아래 주석을 해제하세요.
+            // 5. 효과음 재생 (선택사항)
+            // 소리를 추가하고 싶다면 아래 두 줄의 주석(/*, */)을 제거하세요.
             /*
             const audio = new Audio('https://www.soundjay.com/mechanical/glass-break-1.mp3');
             audio.play();
